@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import OpenAI from '@candlefinance/react-native-openai';
+import OpenAI from 'react-native-openai';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {

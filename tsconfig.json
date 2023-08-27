@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@candlefinance/react-native-openai": ["./src/index"]
+      "react-native-openai": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

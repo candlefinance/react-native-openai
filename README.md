@@ -39,7 +39,7 @@ Currently the project only supports iOS using URLSession for faster performance.
 ## Installation
 
 ```sh
-yarn add @candlefinance/react-native-openai
+yarn add react-native-openai
 ```
 
 ## Basic Usage
@@ -49,7 +49,7 @@ yarn add @candlefinance/react-native-openai
 3. Check out the documentation for more information on the available methods.
 
 ```js
-import OpenAI from '@candlefinance/react-native-openai';
+import OpenAI from 'react-native-openai';
 
 const openAI = new OpenAI('API_KEY', 'ORG_ID');
 

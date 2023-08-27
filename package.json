@@ -1,5 +1,5 @@
 {
-  "name": "@candlefinance/react-native-openai",
+  "name": "react-native-openai",
   "version": "0.1.0",
   "description": "OpenAI API for React Native",
   "main": "lib/commonjs/index",
