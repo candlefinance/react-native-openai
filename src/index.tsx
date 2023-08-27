@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
   `The package '@candlefinance/react-native-openai' doesn't seem to be linked. Make sure: \n\n` +
@@ -6,7 +6,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const ReactNativeOpenai = NativeModules.ReactNativeOpenai
+const ReactNativeOpenAI = NativeModules.ReactNativeOpenai
   ? NativeModules.ReactNativeOpenai
   : new Proxy(
       {},
@@ -17,6 +17,30 @@ const ReactNativeOpenai = NativeModules.ReactNativeOpenai
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return ReactNativeOpenai.multiply(a, b);
+export type EventTypes = 'onMessageReceived';
+
+class OpenAI {
+  private bridge: NativeEventEmitter;
+
+  public constructor(apiKey: string, organization: string) {
+    this.bridge = new NativeEventEmitter(ReactNativeOpenAI);
+    ReactNativeOpenAI.initialize(apiKey, organization);
+  }
+
+  public stream(prompt: string) {
+    return ReactNativeOpenAI.stream(prompt);
+  }
+
+  public addListener(
+    event: EventTypes,
+    callback: (event: { payload: { message: string } }) => void
+  ) {
+    this.bridge.addListener(event, callback);
+  }
+
+  public removeListener(event: EventTypes) {
+    this.bridge.removeAllListeners(event);
+  }
 }
+
+export default OpenAI;

@@ -44,7 +44,7 @@
     "android"
   ],
   "repository": "https://github.com/candlefinance/react-native-openai",
-  "author": "Gary Tokman <gary@trycandle.com> (https://github.com/candlefinance/react-native-ai)",
+  "author": "Gary Tokman <gary@trycandle.com> (https://candle.fi)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/candlefinance/react-native-openai/issues"

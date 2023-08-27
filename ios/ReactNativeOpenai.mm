@@ -1,14 +1,15 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(ReactNativeOpenai, NSObject)
+@interface RCT_EXTERN_MODULE(ReactNativeOpenai, RCTEventEmitter)
 
-RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(supportedEvents)
+RCT_EXTERN_METHOD(stream:(NSString *)prompt)
+RCT_EXTERN_METHOD(initialize:(NSString *)apiKey organization:(NSString *)organization)
 
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  return YES;
 }
 
 @end
