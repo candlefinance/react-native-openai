@@ -24,7 +24,7 @@ export default function App() {
         placeholder="Ask me a question."
         onEndEditing={(e) => {
           console.log(e.nativeEvent.text);
-          ai.stream(e.nativeEvent.text);
+          ai.createCompletion(e.nativeEvent.text);
         }}
         style={styles.input}
       />

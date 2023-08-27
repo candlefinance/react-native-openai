@@ -27,7 +27,7 @@ class OpenAI {
     ReactNativeOpenAI.initialize(apiKey, organization);
   }
 
-  public stream(prompt: string) {
+  public createCompletion(prompt: string) {
     return ReactNativeOpenAI.stream(prompt);
   }
 

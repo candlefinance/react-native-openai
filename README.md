@@ -6,16 +6,35 @@
 
 <div align="center">
   <img alt="npm downloads" src="https://img.shields.io/npm/dw/@candlefinance/react-native-openai?logo=npm&label=NPM%20downloads&cacheSeconds=3600"/>
-  <img alt="discord users online" src="https://discord.gg/qnAgjxhg6n" 
+  <a alt="discord users online" href="https://discord.gg/qnAgjxhg6n" 
   target="_blank"
-  />
+  rel="noopener noreferrer">
+    <img alt="discord users online" src="https://img.shields.io/discord/986610142768406548?label=Discord&logo=discord&logoColor=white&cacheSeconds=3600"/>
 </div>
 
 <br/>
 
 <h1 align="center">
-  Lightweight OpenAI API for React Native (iOS only)
+  Lightweight OpenAI API for React Native
 </h1>
+
+<br/>
+
+Currently the project only supports iOS using URLSession for faster performance. Android support is [coming soon](https://github.com/candlefinance/react-native-openai/issues/1).
+
+## Features
+
+- [x] [Chat](https://platform.openai.com/docs/api-reference/chat)
+- [x] [Models](https://beta.openai.com/docs/api-reference/models)
+- [x] [Completions](https://beta.openai.com/docs/api-reference/completions)
+- [x] [Edits](https://beta.openai.com/docs/api-reference/edits)
+- [x] [Images](https://beta.openai.com/docs/api-reference/images)
+- [x] [Embeddings](https://beta.openai.com/docs/api-reference/embeddings)
+- [x] [Files](https://beta.openai.com/docs/api-reference/files)
+- [x] [Moderations](https://beta.openai.com/docs/api-reference/moderations)
+- [ ] [Fine-tunes](https://beta.openai.com/docs/api-reference/fine-tunes)
+- [x] [Speech to text](https://platform.openai.com/docs/guides/speech-to-text)
+- [ ] [Function calling](https://platform.openai.com/docs/guides/gpt/function-calling)
 
 ## Installation
 
@@ -23,10 +42,14 @@
 yarn add @candlefinance/react-native-openai
 ```
 
-## Usage
+## Basic Usage
+
+1. Create a new OpenAI instance with your API key and organization ID.
+2. Call `createCompletion` with your prompt to generate a streaming completion.
+3. Check out the documentation for more information on the available methods.
 
 ```js
-import { multiply } from '@candlefinance/react-native-openai';
+import OpenAI from '@candlefinance/react-native-openai';
 
 const openAI = new OpenAI('API_KEY', 'ORG_ID');
 
@@ -43,14 +66,14 @@ React.useEffect(() => {
 }, []);
 
 // Create a new completion
-openAI.stream(e.nativeEvent.text);
+func ask(question: string) {
+  openAI.createCompletion(question);
+}
 ```
 
 ## Contributing
 
-Join our [Discord](https://discord.gg/qnAgjxhg6n) in #dev channel to chat and ask questions!
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+Join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#dev** channel.
 
 ## License
 
