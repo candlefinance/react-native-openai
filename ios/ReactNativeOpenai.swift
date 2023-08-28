@@ -4,11 +4,6 @@ import React
 @objc(ReactNativeOpenai)
 final class ReactNativeOpenai: RCTEventEmitter {
     
-    struct Action {
-        var action: String
-        var payload: Any!
-    }
-    
     let urlSession = URLSession(configuration: .default)
     var configuration: Configuration?
     lazy var openAIClient = Client(session: urlSession, configuration: configuration!)
@@ -18,8 +13,6 @@ final class ReactNativeOpenai: RCTEventEmitter {
     private static var isInitialized = false
     
     private static var queue: [Action] = []
-    
-    private static let onMessageRecived = "onMessageReceived"
     
     @objc override init() {
         super.init()
@@ -31,29 +24,30 @@ final class ReactNativeOpenai: RCTEventEmitter {
         self.configuration = Configuration(apiKey: apiKey, organization: organization)
     }
     
-    @objc public override func constantsToExport() -> [AnyHashable : Any]! {
-        return ["ON_STORE_ACTION": Self.onMessageRecived]
-    }
-    
     override public static func requiresMainQueueSetup() -> Bool {
         return true
     }
     
     @objc public override func supportedEvents() -> [String] {
-        [Self.onMessageRecived]
+       ["onChatMessageReceived"]
+    }
+    
+    struct Action {
+        let type: String
+        let payload: String
     }
     
     private static func sendStoreAction(_ action: Action) {
         if let emitter = self.emitter {
-            emitter.sendEvent(withName: onMessageRecived, body: [
-                "type": action.action,
+            emitter.sendEvent(withName: "onChatMessageReceived", body: [
+                "type": action.type,
                 "payload": action.payload
             ])
         }
     }
     
-    @objc public static func dispatch(action: String, payload: Any!) {
-        let actionObj = Action(action: action, payload: payload)
+    @objc public static func dispatch(type: String, payload: String) {
+        let actionObj = Action(type: type, payload: payload)
         if isInitialized {
             self.sendStoreAction(actionObj)
         } else {
@@ -77,23 +71,30 @@ final class ReactNativeOpenai: RCTEventEmitter {
 @available(iOS 15.0, *)
 extension ReactNativeOpenai {
     @objc(stream:)
-    public func stream(prompt: String) {
+    public func stream(input: NSDictionary) {
         Task {
             do {
+                let decoded = try DictionaryDecoder().decode(ChatInput.self, from: input)
                 let completion = try await openAIClient.chats.stream(
-                    model: Model.GPT3.gpt3_5Turbo,
-                    messages: [.user(content: prompt)]
+                    model: decoded,
+                    messages: decoded.toMessages,
+                    temperature: decoded.temperature ?? 1,
+                    topP: decoded.topP ?? 1,
+                    n: decoded.n ?? 1,
+                    stops: decoded.stops ?? [],
+                    maxTokens: decoded.maxTokens,
+                    presencePenalty: decoded.presencePenalty ?? 0,
+                    frequencyPenalty: decoded.frequencyPenalty ?? 0,
+                    logitBias: decoded.logitBias ?? [:],
+                    user: decoded.user
                 )
                 for try await chat in completion {
-                if let streamMessage = chat.choices.first?.delta.content {
-                    print("Stream message: \(streamMessage)")
-                    Self.dispatch(action: Self.onMessageRecived, payload: [
-                        "message": streamMessage
-                    ])
-                }
+                    if let payload = String(data: try JSONEncoder().encode(chat), encoding: .utf8) {
+                        Self.dispatch(type: "onChatMessageReceived", payload: payload)
+                    }
                 }
             } catch {
-                print("j",error)
+                print("error", error)
             }
         }
     }

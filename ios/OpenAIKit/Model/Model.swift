@@ -30,7 +30,7 @@ extension Model {
     }
 }
 
-public protocol ModelID {
+public protocol ModelID: Codable {
     var id: String { get }
 }
 

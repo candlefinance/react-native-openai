@@ -9,9 +9,9 @@ public struct ChatProvider {
     /**
      Create chat completion
      POST
-      
+     
      https://api.openai.com/v1/chat/completions
-
+     
      Creates a chat completion for the provided prompt and parameters
      */
     public func create(
@@ -42,17 +42,17 @@ public struct ChatProvider {
             logitBias: logitBias,
             user: user
         )
-    
+        
         return try await requestHandler.perform(request: request)
-
+        
     }
     
     /**
      Create chat completion
      POST
-      
+     
      https://api.openai.com/v1/chat/completions
-
+     
      Creates a chat completion for the provided prompt and parameters
      
      stream If set, partial message deltas will be sent, like in ChatGPT.
@@ -88,8 +88,8 @@ public struct ChatProvider {
             logitBias: logitBias,
             user: user
         )
-    
+        
         return try await requestHandler.stream(request: request)
-                
+        
     }
 }
