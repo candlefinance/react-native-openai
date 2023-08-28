@@ -1,6 +1,6 @@
 import React
-import OpenAIKit
 
+@available(iOS 15.0, *)
 @objc(ReactNativeOpenai)
 final class ReactNativeOpenai: RCTEventEmitter {
     
@@ -9,9 +9,11 @@ final class ReactNativeOpenai: RCTEventEmitter {
         var payload: Any!
     }
     
-    private var openAI: OpenAIKit?
+    let urlSession = URLSession(configuration: .default)
+    var configuration: Configuration?
+    lazy var openAIClient = Client(session: urlSession, configuration: configuration!)
     
-   @objc public static var emitter: RCTEventEmitter?
+    @objc public static var emitter: RCTEventEmitter?
     
     private static var isInitialized = false
     
@@ -23,10 +25,10 @@ final class ReactNativeOpenai: RCTEventEmitter {
         super.init()
         Self.emitter = self
     }
-
+    
     @objc(initialize:organization:)
     public func initialize(apiKey: String, organization: String) {
-        self.openAI = OpenAIKit(apiToken: apiKey, organization: organization)
+        self.configuration = Configuration(apiKey: apiKey, organization: organization)
     }
     
     @objc public override func constantsToExport() -> [AnyHashable : Any]! {
@@ -72,29 +74,26 @@ final class ReactNativeOpenai: RCTEventEmitter {
     }
 }
 
+@available(iOS 15.0, *)
 extension ReactNativeOpenai {
     @objc(stream:)
     public func stream(prompt: String) {
-        guard let openAI = self.openAI else {
-            fatalError("OpenAI is not initialized, add initialize method to your app")
-            return
-        }
-        print("start streaming.....")
-        openAI.sendStreamChatCompletion(
-            newMessage: AIMessage(role: .user, content: prompt),
-            model: .gptV3_5(.gptTurbo),
-            maxTokens: 2048
-        ) { result in
-            switch result {
-            case .success(let streamResult):
-                if let streamMessage = streamResult.message?.choices.first?.message {
+        Task {
+            do {
+                let completion = try await openAIClient.chats.stream(
+                    model: Model.GPT3.gpt3_5Turbo,
+                    messages: [.user(content: prompt)]
+                )
+                for try await chat in completion {
+                if let streamMessage = chat.choices.first?.delta.content {
                     print("Stream message: \(streamMessage)")
                     Self.dispatch(action: Self.onMessageRecived, payload: [
-                        "message": streamMessage.content
+                        "message": streamMessage
                     ])
                 }
-            case .failure(let error):
-                print(error)
+                }
+            } catch {
+                print("j",error)
             }
         }
     }

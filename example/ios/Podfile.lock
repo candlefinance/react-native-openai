@@ -71,7 +71,6 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - libevent (2.1.12)
-  - OpenAIKit (1.5.0)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -450,7 +449,6 @@ PODS:
     - React-logger (= 0.72.3)
     - React-perflogger (= 0.72.3)
   - ReactNativeOpenAI (0.1.0):
-    - OpenAIKit
     - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
@@ -534,7 +532,6 @@ SPEC REPOS:
     - FlipperKit
     - fmt
     - libevent
-    - OpenAIKit
     - OpenSSL-Universal
     - SocketRocket
     - YogaKit
@@ -636,7 +633,6 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  OpenAIKit: cd69fa5a5585e13ab416042cb98fd31897dcf3f8
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
@@ -670,11 +666,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: af0b24628c1d543a3f87251c9efa29c5a589e08a
   React-utils: bcb57da67eec2711f8b353f6e3d33bd8e4b2efa3
   ReactCommon: d7d63a5b3c3ff29304a58fc8eb3b4f1b077cd789
-  ReactNativeOpenAI: 2bf70756d77ed1565720a14144e953abe7d155bd
+  ReactNativeOpenAI: 93da4285ad4a32ab357523643ec91e8d4d1513e8
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: de38e1abd726248643b04e967f81da73b9a3b577
+PODFILE CHECKSUM: 19d89d5a431df00f3ce6b4f3999bfda93d6ad385
 
 COCOAPODS: 1.12.1
