@@ -60,6 +60,8 @@ namespace ChatModels {
     user?: string;
   };
 
+  type FinishReason = 'length' | 'stop' | 'content_filter';
+
   export type StreamOutput = {
     id: string;
     object: string;
@@ -71,8 +73,29 @@ namespace ChatModels {
         role?: string;
       };
       index: number;
-      finishReason: 'length' | 'stop' | 'content_filter';
+      finishReason: FinishReason;
     }[];
+  };
+
+  type Usage = {
+    promptTokens: number;
+    completionTokens?: number;
+    totalTokens: number;
+  };
+
+  type Choice = {
+    index: number;
+    message: Message;
+    finishReason: FinishReason;
+  };
+
+  export type CreateOutput = {
+    id: string;
+    object: string;
+    created: number;
+    model: string;
+    choices: Choice[];
+    usage: Usage;
   };
 }
 
@@ -87,6 +110,13 @@ class Chat {
 
   public stream(input: ChatModels.StreamInput) {
     return this.module.stream(input);
+  }
+
+  public async create(
+    input: ChatModels.StreamInput
+  ): Promise<ChatModels.CreateOutput> {
+    const result = await this.module.create(input);
+    return JSON.parse(result);
   }
 
   public addListener(

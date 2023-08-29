@@ -29,7 +29,7 @@ final class ReactNativeOpenai: RCTEventEmitter {
     }
     
     @objc public override func supportedEvents() -> [String] {
-       ["onChatMessageReceived"]
+        ["onChatMessageReceived"]
     }
     
     struct Action {
@@ -68,6 +68,7 @@ final class ReactNativeOpenai: RCTEventEmitter {
     }
 }
 
+// MARK: - Chat
 @available(iOS 15.0, *)
 extension ReactNativeOpenai {
     @objc(stream:)
@@ -94,7 +95,37 @@ extension ReactNativeOpenai {
                     }
                 }
             } catch {
-                print("error", error)
+                Self.dispatch(type: "onChatMessageReceived", payload: "Error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @objc(create:withResolver:withRejecter:)
+    public func create(input: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        Task {
+            do {
+                let decoded = try DictionaryDecoder().decode(ChatInput.self, from: input)
+                let completion = try await openAIClient.chats.create(
+                    model: decoded,
+                    messages: decoded.toMessages,
+                    temperature: decoded.temperature ?? 1,
+                    topP: decoded.topP ?? 1,
+                    n: decoded.n ?? 1,
+                    stops: decoded.stops ?? [],
+                    maxTokens: decoded.maxTokens,
+                    presencePenalty: decoded.presencePenalty ?? 0,
+                    frequencyPenalty: decoded.frequencyPenalty ?? 0,
+                    logitBias: decoded.logitBias ?? [:],
+                    user: decoded.user
+                )
+                if let payload = String(data: try JSONEncoder().encode(completion), encoding: .utf8) {
+                    resolve(payload)
+                } else {
+                    reject("error", "error", nil)
+                }
+            } catch {
+                print(error)
+                reject("error", "error", error)
             }
         }
     }
