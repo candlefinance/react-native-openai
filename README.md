@@ -20,7 +20,9 @@
 
 <br/>
 
-Currently the project only supports iOS using URLSession for faster performance. Android support is [coming soon](https://github.com/candlefinance/react-native-openai/issues/1).
+Currently, this library only supports the [Chat](https://platform.openai.com/docs/api-reference/chat) API. We are working on adding support for the other APIs. If you would like to contribute, please join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#oss** channel or create a pull request.
+
+The goal is to make this library take advantage of the native APIs like URLSession and Android's Ktor engine for better performance and reliability.
 
 ## Features
 
@@ -85,9 +87,9 @@ func ask(question: string) {
 }
 ```
 
-## Contributing
+## Credit
 
-Join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#oss** channel.
+Thank you to Dylan Shine & Mouaad Aallam for making [openai-kit](https://github.com/dylanshine/openai-kit) and [openai-kotlin](https://github.com/aallam/openai-kotlin) which this library is based on.
 
 ## License
 
