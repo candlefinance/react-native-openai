@@ -71,7 +71,7 @@ React.useEffect(() => {
  return () => {
    openAI.chat.removeListener('onChatMessageReceived');
  };
-  }, [openAI]);
+}, [openAI]);
 
 // Create a new completion
 func ask(question: string) {
