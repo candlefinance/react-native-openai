@@ -1,5 +1,5 @@
 <div align="center">
-  <img margin="auto" width="800px" src="https://github.com/candlefinance/react-native-openai/assets/12258850/e951f32f-7e61-4368-b450-0bde33571612" alt="logo / OpenAI">
+  <img margin="auto" height="300px" src="https://github.com/candlefinance/react-native-openai/assets/12258850/e951f32f-7e61-4368-b450-0bde33571612" alt="logo / OpenAI">
 </div>
 
 <br/>
