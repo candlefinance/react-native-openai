@@ -128,6 +128,5 @@ extension ReactNativeOpenai {
                 reject("error", "error", error)
             }
         }
-    }
-    
+    } 
 }

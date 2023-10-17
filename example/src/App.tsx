@@ -1,34 +1,67 @@
 import * as React from 'react';
 
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useColorScheme,
+} from 'react-native';
 import OpenAI from 'react-native-openai';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {
+  const scheme = useColorScheme();
   const [result, setResult] = React.useState<string>('');
-  const ai = React.useMemo(() => new OpenAI('', ''), []);
+  const openAI = React.useMemo(() => new OpenAI('', ''), []);
 
   React.useEffect(() => {
-    ai.addListener('onMessageReceived', (event) => {
-      console.log(event);
-      setResult((message) => message + event.payload?.message);
+    openAI.chat.addListener('onChatMessageReceived', (payload) => {
+      setResult((message) => {
+        const newMessage = payload.choices[0]?.delta.content;
+        if (newMessage) {
+          return message + newMessage;
+        }
+        return message;
+      });
     });
 
     return () => {
-      ai.removeListener('onMessageReceived');
+      openAI.chat.removeListener('onChatMessageReceived');
     };
-  }, [ai]);
+  }, [openAI]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: scheme === 'dark' ? 'black' : 'white' },
+      ]}
+    >
       <TextInput
         placeholder="Ask me a question."
-        onEndEditing={(e) => {
+        onEndEditing={async (e) => {
           console.log(e.nativeEvent.text);
-          ai.createCompletion(e.nativeEvent.text);
+          openAI.chat.stream({
+            messages: [
+              {
+                role: 'user',
+                content: e.nativeEvent.text,
+              },
+            ],
+            model: 'gpt-3.5-turbo',
+          });
         }}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: scheme === 'dark' ? 'white' : 'black',
+            backgroundColor: scheme === 'dark' ? 'black' : 'white',
+          },
+        ]}
       />
-      <Text>Result: {result}</Text>
+      <Text style={{ color: scheme === 'dark' ? 'white' : 'black' }}>
+        Result: {result}
+      </Text>
     </View>
   );
 }

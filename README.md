@@ -25,15 +25,15 @@ Currently the project only supports iOS using URLSession for faster performance.
 ## Features
 
 - [x] [Chat](https://platform.openai.com/docs/api-reference/chat)
-- [x] [Models](https://beta.openai.com/docs/api-reference/models)
-- [x] [Completions](https://beta.openai.com/docs/api-reference/completions)
-- [x] [Edits](https://beta.openai.com/docs/api-reference/edits)
-- [x] [Images](https://beta.openai.com/docs/api-reference/images)
-- [x] [Embeddings](https://beta.openai.com/docs/api-reference/embeddings)
-- [x] [Files](https://beta.openai.com/docs/api-reference/files)
-- [x] [Moderations](https://beta.openai.com/docs/api-reference/moderations)
+- [ ] [Models](https://beta.openai.com/docs/api-reference/models)
+- [ ] [Completions](https://beta.openai.com/docs/api-reference/completions)
+- [ ] [Edits](https://beta.openai.com/docs/api-reference/edits)
+- [ ] [Images](https://beta.openai.com/docs/api-reference/images)
+- [ ] [Embeddings](https://beta.openai.com/docs/api-reference/embeddings)
+- [ ] [Files](https://beta.openai.com/docs/api-reference/files)
+- [ ] [Moderations](https://beta.openai.com/docs/api-reference/moderations)
 - [ ] [Fine-tunes](https://beta.openai.com/docs/api-reference/fine-tunes)
-- [x] [Speech to text](https://platform.openai.com/docs/guides/speech-to-text)
+- [ ] [Speech to text](https://platform.openai.com/docs/guides/speech-to-text)
 - [ ] [Function calling](https://platform.openai.com/docs/guides/gpt/function-calling)
 
 ## Installation
@@ -45,7 +45,7 @@ yarn add react-native-openai
 ## Basic Usage
 
 1. Create a new OpenAI instance with your API key and organization ID.
-2. Call `createCompletion` with your prompt to generate a streaming completion.
+2. Call `stream` with your messages to generate a streaming completion.
 3. Check out the documentation for more information on the available methods.
 
 ```js
@@ -56,24 +56,38 @@ const openAI = new OpenAI('API_KEY', 'ORG_ID');
 const [result, setResult] = React.useState('');
 
 React.useEffect(() => {
-  openAI.addListener('onMessageReceived', (event) => {
-    setResult((message) => message + event.payload.message);
-  });
+ openAI.chat.addListener('onChatMessageReceived', (payload) => {
+   setResult((message) => {
+     const newMessage = payload.choices[0]?.delta.content;
+     if (newMessage) {
+       return message + newMessage;
+     }
+     return message;
+   });
+ });
 
-  return () => {
-    openAI.removeListener('onMessageReceived');
-  };
-}, []);
+ return () => {
+   openAI.chat.removeListener('onChatMessageReceived');
+ };
+  }, [openAI]);
 
 // Create a new completion
 func ask(question: string) {
-  openAI.createCompletion(question);
+   openAI.chat.stream({
+      messages: [
+        {
+          role: 'user',
+          content: question,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+  });
 }
 ```
 
 ## Contributing
 
-Join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#dev** channel.
+Join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#oss** channel.
 
 ## License
 
