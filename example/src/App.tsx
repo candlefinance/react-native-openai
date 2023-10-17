@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import {
+  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
-  View,
   useColorScheme,
 } from 'react-native';
 import OpenAI from 'react-native-openai';
@@ -31,7 +31,7 @@ export default function App() {
   }, [openAI]);
 
   return (
-    <View
+    <SafeAreaView
       style={[
         styles.container,
         { backgroundColor: scheme === 'dark' ? 'black' : 'white' },
@@ -39,7 +39,10 @@ export default function App() {
     >
       <TextInput
         placeholder="Ask me a question."
+        autoFocus
+        clearTextOnFocus
         onEndEditing={async (e) => {
+          setResult('');
           console.log(e.nativeEvent.text);
           openAI.chat.stream({
             messages: [
@@ -59,10 +62,17 @@ export default function App() {
           },
         ]}
       />
-      <Text style={{ color: scheme === 'dark' ? 'white' : 'black' }}>
+      <Text
+        style={{
+          marginHorizontal: 16,
+          fontSize: 17,
+          color: scheme === 'dark' ? 'white' : 'black',
+          alignSelf: 'flex-start',
+        }}
+      >
         Result: {result}
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -70,7 +80,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 24,
   },
   box: {
@@ -79,12 +88,14 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   input: {
-    width: 300,
+    width: '90%',
     height: 50,
     backgroundColor: 'white',
     borderWidth: 1,
     borderColor: 'gray',
-    borderRadius: 5,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    fontSize: 17,
     padding: 10,
   },
 });
