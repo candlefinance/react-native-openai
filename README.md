@@ -1,6 +1,4 @@
-<div align="center">
-  <img margin="auto" height="200px" src="https://github.com/candlefinance/react-native-openai/assets/12258850/e951f32f-7e61-4368-b450-0bde33571612" alt="logo / OpenAI">
-</div>
+https://github.com/candlefinance/react-native-openai/assets/12258850/44a496dc-68bc-44ee-9224-07c302121e94
 
 <br/>
 
@@ -54,9 +52,9 @@ yarn add react-native-openai
 import OpenAI from 'react-native-openai';
 
 const openAI = new OpenAI('API_KEY', 'ORG_ID');
-
 const [result, setResult] = React.useState('');
 
+// Listen for new messages
 React.useEffect(() => {
  openAI.chat.addListener('onChatMessageReceived', (payload) => {
    setResult((message) => {
@@ -73,7 +71,7 @@ React.useEffect(() => {
  };
 }, [openAI]);
 
-// Create a new completion
+// Send a message
 func ask(question: string) {
    openAI.chat.stream({
       messages: [
