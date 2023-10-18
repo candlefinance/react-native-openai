@@ -1,7 +1,5 @@
 package com.candlefinance.reactnativeopenai
 
-import android.provider.ContactsContract.CommonDataKinds.Organization
-import com.aallam.openai.api.chat.ChatCompletion
 import com.aallam.openai.api.chat.ChatCompletionChunk
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -14,21 +12,24 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.JsonNull.content
 import org.json.JSONObject
 import java.util.HashMap
 import kotlin.time.Duration.Companion.seconds
 
 class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
+  val scope = CoroutineScope(Job() + Dispatchers.IO)
+  var job: Job? = null
 
   override fun getName(): String {
     return NAME
@@ -102,30 +103,32 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
       user = user,
     )
     runBlocking {
-      val completion: Flow<ChatCompletionChunk>? = openAIClient?.chatCompletions(chatCompletionRequest)
-      completion?.map { it }?.collect {
-        println("completion ${it.choices}")
-        val map = mapOf(
-          "id" to it.id,
-          "created" to it.created,
-          "model" to (it.model?.id ?: "$model"),
-          "choices" to (it.choices?.map {
-            mapOf(
-              "delta" to mapOf(
-                "content" to it.delta.content,
-                "role" to it.delta.role.toString()
-              ),
-              "index" to it.index,
-              "finishReason" to (it.finishReason?.value ?: "stop")
-            )
-          } ?: {}),
-        )
-        dispatch(onChatMessageReceived, map)
+      job = scope.launch {
+        val completion: Flow<ChatCompletionChunk>? = openAIClient?.chatCompletions(chatCompletionRequest)
+        completion?.map { it }?.collect { completion ->
+          println("completion ${completion.choices}")
+          val map = mapOf(
+            "id" to completion.id,
+            "created" to completion.created,
+            "model" to (completion.model?.id ?: "$model"),
+            "choices" to (completion.choices?.map {
+              mapOf(
+                "delta" to mapOf(
+                  "content" to it.delta.content,
+                  "role" to it.delta.role.toString()
+                ),
+                "index" to it.index,
+                "finishReason" to (it.finishReason?.value ?: "stop")
+              )
+            } ?: {}),
+          )
+          dispatch(onChatMessageReceived, map)
+        }
       }
     }
   }
 
-  fun dispatch(action: String, payload: Map<String, Any?>) {
+  private fun dispatch(action: String, payload: Map<String, Any?>) {
     val map = mapOf(
       "type" to action,
       "payload" to JSONObject(payload).toString()
