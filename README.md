@@ -1,5 +1,5 @@
 <div align="center">
-  <img margin="auto" width="1000px" src="https://github.com/candlefinance/react-native-openai/assets/12258850/cba19df9-1083-4d43-a291-ffdcd5cf6c7c" alt="Candle / OpenAI">
+  <img margin="auto" height="200px" src="https://github.com/candlefinance/react-native-openai/assets/12258850/e951f32f-7e61-4368-b450-0bde33571612" alt="logo / OpenAI">
 </div>
 
 <br/>
@@ -15,7 +15,7 @@
 <br/>
 
 <h1 align="center">
-  Lightweight OpenAI API for React Native
+ OpenAI API for React Native
 </h1>
 
 <br/>
