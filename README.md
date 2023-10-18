@@ -51,6 +51,7 @@ yarn add react-native-openai
 ```js
 import OpenAI from 'react-native-openai';
 
+// 🚩: Do not hard code your API key in production
 const openAI = new OpenAI('API_KEY', 'ORG_ID');
 const [result, setResult] = React.useState('');
 
