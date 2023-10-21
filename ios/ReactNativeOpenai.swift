@@ -19,9 +19,31 @@ final class ReactNativeOpenai: RCTEventEmitter {
         Self.emitter = self
     }
     
-    @objc(initialize:organization:)
-    public func initialize(apiKey: String, organization: String) {
-        self.configuration = Configuration(apiKey: apiKey, organization: organization)
+    struct Config: Codable {
+        let apiKey: String?
+        let organization: String?
+        let scheme: String?
+        let host: String?
+        let pathPrefix: String?
+    }
+    
+    @objc(initialize:)
+    public func initialize(config: NSDictionary) {
+        do {
+            let decoded = try DictionaryDecoder().decode(Config.self, from: config)
+            var api: API?
+            if let host = decoded.host {
+                let scheme = decoded.scheme != nil ? API.Scheme.custom(decoded.scheme!) : .https
+                api = API(scheme: scheme, host: host, pathPrefix: decoded.pathPrefix)
+            }
+            self.configuration = Configuration(
+                apiKey: decoded.apiKey ?? "",
+                organization: decoded.organization ?? "",
+                api: api
+            )
+        } catch {
+            print("Error:", error.localizedDescription)
+        }
     }
     
     override public static func requiresMainQueueSetup() -> Bool {
@@ -128,5 +150,5 @@ extension ReactNativeOpenai {
                 reject("error", "error", error)
             }
         }
-    } 
+    }
 }

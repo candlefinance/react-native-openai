@@ -1,13 +1,26 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
+export type Config =
+  | {
+      apiKey: string;
+      organization: string;
+    }
+  | {
+      apiKey?: string;
+      organization?: string;
+      scheme?: string;
+      host: string;
+      pathPrefix?: string;
+    };
+
 class OpenAI {
   module = NativeModules.ReactNativeOpenai;
   private bridge: NativeEventEmitter;
   public chat: Chat;
 
-  public constructor(apiKey: string, organization: string) {
+  public constructor(config: Config) {
     this.bridge = new NativeEventEmitter(this.module);
-    this.module.initialize(apiKey, organization);
+    this.module.initialize(config);
     this.chat = new Chat(this.module, this.bridge);
   }
 }

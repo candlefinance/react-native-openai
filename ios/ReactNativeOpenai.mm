@@ -5,7 +5,7 @@
 
 // API
 RCT_EXTERN_METHOD(supportedEvents)
-RCT_EXTERN_METHOD(initialize:(NSString *)apiKey organization:(NSString *)organization)
+RCT_EXTERN_METHOD(initialize:(NSDictionary *)config)
 
 // Chat
 RCT_EXTERN_METHOD(stream:(NSDictionary *)input)

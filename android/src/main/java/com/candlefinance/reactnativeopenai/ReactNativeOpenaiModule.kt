@@ -1,5 +1,6 @@
 package com.candlefinance.reactnativeopenai
 
+import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionChunk
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -8,6 +9,7 @@ import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
+import com.aallam.openai.client.OpenAIHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -15,6 +17,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import io.ktor.client.utils.EmptyContent.headers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,16 +62,28 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
   private var openAIClient: OpenAI? = null
 
   @ReactMethod
-  fun initialize(apiKey: String, organization: String) {
-    println("Initializing client with $apiKey and org $organization")
+  fun initialize(config: ReadableMap) {
+    val apiKey = if (config.hasKey("apiKey")) config.getString("apiKey") else null
+    val organization = if (config.hasKey("organization")) config.getString("organization") else null
+    val scheme = if (config.hasKey("scheme")) config.getString("scheme") else null
+    val baseUrl = if (config.hasKey("host")) config.getString("host") else null
+    val pathPrefix = if (config.hasKey("pathPrefix")) config.getString("pathPrefix") else null
+    val host = baseUrl?.let {
+      OpenAIHost(
+        baseUrl = "${scheme ?: "https"}://${it}/${pathPrefix ?: "v1"}/"
+      )
+    }
+    println(host)
     val config = OpenAIConfig(
-      token = apiKey,
+      token = apiKey ?: "",
       organization = organization,
-      timeout = Timeout(socket = 60.seconds)
+      timeout = Timeout(socket = 60.seconds),
+      host = host ?: OpenAIHost.OpenAI
     )
     this.openAIClient = OpenAI(config)
   }
 
+  @OptIn(BetaOpenAI::class)
   @ReactMethod
   fun stream(input: ReadableMap) {
     val model = input.getString("model")
@@ -114,11 +129,11 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
             "choices" to (completion.choices?.map {
               mapOf(
                 "delta" to mapOf(
-                  "content" to it.delta.content,
-                  "role" to it.delta.role.toString()
+                  "content" to (it.delta?.content ?: ""),
+                  "role" to it.delta?.role.toString()
                 ),
                 "index" to it.index,
-                "finishReason" to (it.finishReason?.value ?: "stop")
+                "finishReason" to (it.finishReason ?: "stop")
               )
             } ?: {}),
           )

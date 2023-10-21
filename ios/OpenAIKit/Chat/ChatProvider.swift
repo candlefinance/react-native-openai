@@ -88,8 +88,6 @@ public struct ChatProvider {
             logitBias: logitBias,
             user: user
         )
-        
         return try await requestHandler.stream(request: request)
-        
     }
 }

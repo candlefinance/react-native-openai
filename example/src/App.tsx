@@ -18,7 +18,14 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 export default function App() {
   const scheme = useColorScheme();
   const [result, setResult] = React.useState<string>('');
-  const openAI = React.useMemo(() => new OpenAI('', ''), []);
+  const openAI = React.useMemo(
+    () =>
+      new OpenAI({
+        apiKey: 'YOUR_API_KEY',
+        organization: 'YOUR_ORGANIZATION',
+      }),
+    []
+  );
 
   const yPosition = React.useRef(new Animated.Value(0)).current;
 
