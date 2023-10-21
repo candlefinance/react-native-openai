@@ -52,38 +52,34 @@ yarn add react-native-openai
 import OpenAI from 'react-native-openai';
 
 // 🚩: Do not hard code your API key in production
-const openAI = new OpenAI('API_KEY', 'ORG_ID');
+const openAI = OpenAI({
+  apiKey: 'YOUR_API_KEY',
+  organization: 'YOUR_ORGANIZATION',
+  // host: 'my-custom-host.com', // Optional: add a custom domain
+});
 const [result, setResult] = React.useState('');
 
-// Listen for new messages
-React.useEffect(() => {
- openAI.chat.addListener('onChatMessageReceived', (payload) => {
-   setResult((message) => {
-     const newMessage = payload.choices[0]?.delta.content;
-     if (newMessage) {
-       return message + newMessage;
-     }
-     return message;
-   });
- });
-
- return () => {
-   openAI.chat.removeListener('onChatMessageReceived');
- };
-}, [openAI]);
+// Listen for messages
+openAI.chat.addListener('onChatMessageReceived', (payload) => {
+  setResult((message) => {
+    const newMessage = payload.choices[0]?.delta.content;
+    if (newMessage) {
+      return message + newMessage;
+    }
+    return message;
+  });
+});
 
 // Send a message
-func ask(question: string) {
-   openAI.chat.stream({
-      messages: [
-        {
-          role: 'user',
-          content: question,
-        },
-      ],
-      model: 'gpt-3.5-turbo',
-  });
-}
+openAI.chat.stream({
+  messages: [
+    {
+      role: 'user',
+      content: question,
+    },
+  ],
+  model: 'gpt-3.5-turbo',
+});
 ```
 
 ## Credit
