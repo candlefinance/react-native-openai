@@ -1,9 +1,10 @@
 https://github.com/candlefinance/react-native-openai/assets/12258850/44a496dc-68bc-44ee-9224-07c302121e94
 
 <br/>
-
 <div align="center">
-  <img alt="npm downloads" src="https://img.shields.io/npm/dw/@candlefinance/react-native-openai?logo=npm&label=NPM%20downloads&cacheSeconds=3600"/>
+  <a alt="npm" href="https://npm.im/%40candlefinance%2Freact-native-openai">
+      <img alt="npm downloads" src="https://img.shields.io/npm/dm/%40candlefinance%2Freact-native-openai.svg"/>
+  </a>
   <a alt="discord users online" href="https://discord.gg/qnAgjxhg6n" 
   target="_blank"
   rel="noopener noreferrer">
