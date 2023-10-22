@@ -1,6 +1,5 @@
 package com.candlefinance.reactnativeopenai
 
-import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionChunk
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -11,13 +10,14 @@ import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import com.aallam.openai.client.OpenAIHost
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import io.ktor.client.utils.EmptyContent.headers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -83,7 +83,6 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
     this.openAIClient = OpenAI(config)
   }
 
-  @OptIn(BetaOpenAI::class)
   @ReactMethod
   fun stream(input: ReadableMap) {
     val model = input.getString("model")
@@ -116,6 +115,8 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
       presencePenalty = presencePenalty,
       frequencyPenalty = frequencyPenalty,
       user = user,
+      stop = toList(stops),
+      logitBias = toMap(logitBias)
     )
     runBlocking {
       job = scope.launch {
@@ -141,6 +142,93 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
         }
       }
     }
+  }
+
+  @ReactMethod
+  fun create(input: ReadableMap, promise: Promise) {
+    val model = input.getString("model")
+    val messages = input.getArray("messages")
+    val temperature = if (input.hasKey("temperature")) input.getDouble("temperature") else null
+    val topP = if (input.hasKey("topP")) input.getDouble("topP") else null
+    val n = if (input.hasKey("n")) input.getInt("n") else null
+    val stops = if (input.hasKey("stops")) input.getArray("stops") else null
+    val maxTokens = if (input.hasKey("maxTokens")) input.getInt("maxTokens") else null
+    val presencePenalty = if (input.hasKey("presencePenalty")) input.getDouble("presencePenalty") else null
+    val frequencyPenalty = if (input.hasKey("frequencyPenalty")) input.getDouble("frequencyPenalty") else null
+    val logitBias = if (input.hasKey("logitBias")) input.getMap("logitBias") else null
+    val user = if (input.hasKey("user")) input.getString("user") else null
+    val m = messages?.toArrayList()?.map { it ->
+      val role: String = (it as HashMap<String, String>).get("role") ?: "user"
+      val content: String = it.get("content") as String
+      ChatMessage(
+        role = ChatRole(role),
+        content = content
+      )
+    } ?: emptyList()
+
+    val chatCompletionRequest = ChatCompletionRequest(
+      model = ModelId(model ?: "gpt-3.5-turbo"),
+      messages = m,
+      maxTokens = maxTokens,
+      temperature = temperature,
+      topP = topP,
+      n = n,
+      presencePenalty = presencePenalty,
+      frequencyPenalty = frequencyPenalty,
+      user = user,
+      stop = toList(stops),
+      logitBias = toMap(logitBias)
+    )
+    runBlocking {
+      job = scope.launch {
+        val completion = openAIClient?.chatCompletion(chatCompletionRequest)
+        val map = mapOf(
+          "id" to (completion?.id ?: ""),
+          "created" to (completion?.created ?: ""),
+          "model" to (completion?.model?.id ?: "$model"),
+          "object" to "chat.completions",
+          "choices" to (completion?.choices?.map {
+            mapOf(
+              "message" to mapOf(
+                "content" to (it.message?.content ?: ""),
+                "role" to it.message?.role.toString()
+              ),
+              "index" to it.index,
+              "finishReason" to (it.finishReason.toString() ?: "stop")
+            )
+          } ?: {}),
+          "usage" to mapOf(
+            "promptTokens" to (completion?.usage?.promptTokens ?: 0),
+            "totalTokens" to (completion?.usage?.totalTokens ?: 0),
+            "completionTokens" to (completion?.usage?.completionTokens ?: 0)
+          ),
+        )
+        val toReadableMap = Arguments.makeNativeMap(map)
+        promise.resolve(toReadableMap)
+      }
+    }
+  }
+
+  private fun toList(array: ReadableArray?): List<String> {
+    val list = mutableListOf<String>()
+    if (array != null) {
+      for (i in 0 until array.size()) {
+        list.add(array.getString(i) ?: "")
+      }
+    }
+    return list
+  }
+
+  private fun toMap(map: ReadableMap?): Map<String, Int>? {
+    val hashMap = mutableMapOf<String, Int>()
+    if (map != null) {
+      val iterator = map.keySetIterator()
+      while (iterator.hasNextKey()) {
+        val key = iterator.nextKey()
+        hashMap[key] = map.getInt(key)
+      }
+    }
+    return hashMap
   }
 
   private fun dispatch(action: String, payload: Map<String, Any?>) {

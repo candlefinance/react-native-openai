@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 export type Config =
   | {
@@ -129,7 +129,10 @@ class Chat {
     input: ChatModels.StreamInput
   ): Promise<ChatModels.CreateOutput> {
     const result = await this.module.create(input);
-    return JSON.parse(result);
+    if (Platform.OS === 'ios') {
+      return JSON.parse(result);
+    }
+    return result;
   }
 
   public addListener(
