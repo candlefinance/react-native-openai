@@ -39,6 +39,8 @@ The goal is to make this library take advantage of the native APIs like URLSessi
 
 ## Installation
 
+Requires `iOS 15+` and Android `minSdkVersion = 24`.
+
 ```sh
 yarn add react-native-openai
 ```
@@ -46,18 +48,18 @@ yarn add react-native-openai
 ## Basic Usage
 
 1. Create a new OpenAI instance with your API key and organization ID.
-2. Call `stream` with your messages to generate a streaming completion.
-3. Check out the documentation for more information on the available methods.
+2. Call `stream` or `create` with your messages to generate a streaming or chat completion.
+3. Pass in your own custom `host` to use your backend in `prod`.
 
 ```js
 import OpenAI from 'react-native-openai';
 
-// 🚩: Do not hard code your API key in production
 const openAI = OpenAI({
   apiKey: 'YOUR_API_KEY',
   organization: 'YOUR_ORGANIZATION',
   // host: 'my-custom-host.com', // Optional: add a custom domain
 });
+
 const [result, setResult] = React.useState('');
 
 // Listen for messages
