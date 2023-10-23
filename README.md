@@ -14,7 +14,7 @@ https://github.com/candlefinance/react-native-openai/assets/12258850/44a496dc-68
 <br/>
 
 <h1 align="center">
- OpenAI API for React Native
+ OpenAI for React Native
 </h1>
 
 <br/>
