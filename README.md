@@ -54,7 +54,7 @@ yarn add react-native-openai
 ```js
 import OpenAI from 'react-native-openai';
 
-const openAI = OpenAI({
+const openAI = new OpenAI({
   apiKey: 'YOUR_API_KEY',
   organization: 'YOUR_ORGANIZATION',
   // host: 'my-custom-host.com', // Optional: add a custom domain
