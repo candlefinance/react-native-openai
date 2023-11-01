@@ -12,6 +12,10 @@ RCT_EXTERN_METHOD(stream:(NSDictionary *)input)
 RCT_EXTERN_METHOD(create:(NSDictionary *)input withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
+// Image
+RCT_EXTERN_METHOD(imageCreate:(NSDictionary *)input withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 
 + (BOOL)requiresMainQueueSetup
 {

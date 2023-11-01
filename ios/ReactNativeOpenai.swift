@@ -151,4 +151,30 @@ extension ReactNativeOpenai {
             }
         }
     }
+    
+    // MARK: - Image
+    @objc(imageCreate:withResolver:withRejecter:)
+    public func imageCreate(input: NSDictionary,resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){
+        Task {
+            do {
+                let decoded = try DictionaryDecoder().decode(ImageInput.self, from: input)
+                let imageResult = try await openAIClient.images.create(
+                    prompt: decoded.prompt,
+                    n:decoded.n ?? 1,
+                    size:decoded.size ?? .fiveTwelve,
+                    user:decoded.user
+                )
+                
+                if let payload = String(data: try JSONEncoder().encode(imageResult), encoding: .utf8) {
+                    resolve(payload)
+                } else {
+                    reject("error", "error", nil)
+                }
+                
+            } catch {
+                reject("error", "error", error)
+            }
+        }
+    }
+    
 }
