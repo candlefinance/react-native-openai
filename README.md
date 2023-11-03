@@ -45,7 +45,7 @@ Requires `iOS 15+` and Android `minSdkVersion = 24`.
 yarn add react-native-openai
 ```
 
-## Basic Usage
+### Basic Usage
 
 ```js
 import OpenAI from 'react-native-openai';
@@ -55,9 +55,7 @@ const openAI = new OpenAI({
   organization: 'YOUR_ORGANIZATION',
 });
 
-// Alternatively (recommended), you can use your own backend and not hardcode an API key in your app
-// pathPrefix is currently not supported on Android, so follow OpenAIs schema for your backend
-// i.e. https://my-custom-domain.com/v1/chat/completions
+// Alternatively (recommended), you can use your own backend and not hardcode an API key in your app i.e. https://my-custom-domain.com/v1/chat/completions (follow the same API as OpenAI until pathPrefix is fixed on Android)
 const openAI = new OpenAI({
   host: 'my-custom-host.com',
 });
@@ -84,7 +82,7 @@ openAI.chat.stream({
   messages: [
     {
       role: 'user',
-      content: question,
+      content: 'How do I star a repo?',
     },
   ],
   model: 'gpt-3.5-turbo',
@@ -98,7 +96,7 @@ await openAI.chate.create(...)
 
 ```js
 const result = await openAI.image.create({
-  prompt: e.nativeEvent.text,
+  prompt: 'An awesome Candle logo',
   n: 3,
   size: '512x512',
 });
