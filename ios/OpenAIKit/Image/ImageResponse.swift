@@ -5,4 +5,6 @@ public struct ImageResponse {
     public let data: [Image]
 }
 
-extension ImageResponse: Decodable {}
+extension ImageResponse: Codable {
+    
+}

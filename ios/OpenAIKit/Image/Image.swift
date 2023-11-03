@@ -4,7 +4,7 @@ public struct Image {
     public let url: String
 }
 
-extension Image: Decodable {}
+extension Image: Codable {}
 
 extension Image {
     public enum Size: String {

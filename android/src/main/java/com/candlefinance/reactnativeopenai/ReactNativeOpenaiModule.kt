@@ -5,6 +5,8 @@ import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.image.ImageCreation
+import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
+import java.util.Date
 import java.util.HashMap
 import kotlin.time.Duration.Companion.seconds
 
@@ -207,6 +210,31 @@ class ReactNativeOpenaiModule(reactContext: ReactApplicationContext) :
         promise.resolve(toReadableMap)
       }
     }
+  }
+
+  @ReactMethod
+  public fun imageCreate(input: ReadableMap,promise: Promise){
+    val prompt = input.getString("prompt") as String;
+    val n = if (input.hasKey("n")) input.getInt("n") else null
+    val size = if (input.hasKey("n")) input.getString("size") else null
+
+    runBlocking {
+      job = scope.launch {
+        var imageResult = openAIClient?.imageURL(creation = ImageCreation(prompt,n, ImageSize(size ?: "512x512")))
+        val map = mapOf(
+          "created" to Date().time,
+          "data" to (imageResult?.map {
+            mapOf(
+              "url" to it.url
+            )
+          } ?: emptyList())
+        )
+        val toReadableMap = Arguments.makeNativeMap(map)
+        promise.resolve(toReadableMap)
+      }
+
+    }
+
   }
 
   private fun toList(array: ReadableArray?): List<String> {

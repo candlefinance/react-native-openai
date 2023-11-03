@@ -17,11 +17,13 @@ class OpenAI {
   module = NativeModules.ReactNativeOpenai;
   private bridge: NativeEventEmitter;
   public chat: Chat;
+  public image: Image;
 
   public constructor(config: Config) {
     this.bridge = new NativeEventEmitter(this.module);
     this.module.initialize(config);
     this.chat = new Chat(this.module, this.bridge);
+    this.image = new Image(this.module);
   }
 }
 
@@ -112,6 +114,25 @@ namespace ChatModels {
   };
 }
 
+namespace ImageModels {
+  type ImageSize = '256x256' | '512x512' | '1024x1024';
+
+  export type ImageInput = {
+    prompt: string;
+    n?: number;
+    size?: ImageSize;
+  };
+
+  type Image = {
+    url: string;
+  };
+
+  export type ImageOutput = {
+    created: Date;
+    data: Image[];
+  };
+}
+
 class Chat {
   private bridge: NativeEventEmitter;
   private module: any;
@@ -147,6 +168,24 @@ class Chat {
 
   public removeListener(event: 'onChatMessageReceived') {
     this.bridge.removeAllListeners(event);
+  }
+}
+
+class Image {
+  private module: any;
+
+  public constructor(module: any) {
+    this.module = module;
+  }
+
+  public async create(
+    input: ImageModels.ImageInput
+  ): Promise<ImageModels.ImageOutput> {
+    const result = await this.module.imageCreate(input);
+    if (Platform.OS === 'ios') {
+      return JSON.parse(result);
+    }
+    return result;
   }
 }
 

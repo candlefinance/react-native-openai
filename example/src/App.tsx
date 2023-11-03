@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import {
   Animated,
+  Button,
+  Image,
   Keyboard,
   Platform,
   SafeAreaView,
@@ -9,6 +11,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  View,
   useColorScheme,
 } from 'react-native';
 import OpenAI from 'react-native-openai';
@@ -50,7 +53,7 @@ export default function App() {
       showSubscription.remove();
       hideSubscription.remove();
     };
-  }, []);
+  }, [yPosition]);
 
   React.useEffect(() => {
     openAI.chat.addListener('onChatMessageReceived', (payload) => {
@@ -67,6 +70,10 @@ export default function App() {
       openAI.chat.removeListener('onChatMessageReceived');
     };
   }, [openAI]);
+
+  const [mode, setMode] = React.useState<'text' | 'image'>('text');
+
+  const [images, setImages] = React.useState<string[]>([]);
 
   return (
     <SafeAreaView
@@ -99,16 +106,24 @@ export default function App() {
               return;
             }
             setResult('');
+            setImages([]);
             console.log(e.nativeEvent.text);
-            openAI.chat.stream({
-              messages: [
-                {
-                  role: 'user',
-                  content: e.nativeEvent.text,
-                },
-              ],
-              model: 'gpt-3.5-turbo',
-            });
+            if (mode === 'text') {
+              openAI.chat.stream({
+                messages: [
+                  {
+                    role: 'user',
+                    content: e.nativeEvent.text,
+                  },
+                ],
+                model: 'gpt-3.5-turbo',
+              });
+            } else {
+              const result = await openAI.image.create({
+                prompt: e.nativeEvent.text,
+              });
+              setImages(result.data.map((image) => image.url));
+            }
           }}
           style={[
             styles.input,
@@ -119,6 +134,22 @@ export default function App() {
           ]}
         />
       </Animated.View>
+      <View style={{ flexDirection: 'row' }}>
+        <Button
+          title="Text"
+          color={mode === 'text' ? 'darkblue' : undefined}
+          onPress={() => {
+            setMode('text');
+          }}
+        />
+        <Button
+          title="Image"
+          color={mode === 'image' ? 'darkblue' : undefined}
+          onPress={() => {
+            setMode('image');
+          }}
+        />
+      </View>
       <ScrollView
         style={{ width: '100%', backgroundColor: 'transparent' }}
         contentContainerStyle={{
@@ -136,6 +167,21 @@ export default function App() {
         >
           Result: {result}
         </Text>
+        {images.map((image) => (
+          <View
+            key={image}
+            style={{
+              width: '100%',
+              height: 300,
+              backgroundColor: 'transparent',
+            }}
+          >
+            <Image
+              source={{ uri: image }}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
