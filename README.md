@@ -19,9 +19,9 @@ https://github.com/candlefinance/react-native-openai/assets/12258850/44a496dc-68
 
 <br/>
 
-Currently, this library only supports the [Chat](https://platform.openai.com/docs/api-reference/chat) API. We are working on adding support for the other APIs. If you would like to contribute, please join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#oss** channel or create a pull request.
-
 The goal is to make this library take advantage of the native APIs like URLSession and Android's Ktor engine for better performance and reliability.
+
+If you would like to contribute, please join our [Discord](https://discord.gg/qnAgjxhg6n) and ask questions in the **#oss** channel or create a pull request.
 
 ## Features
 
@@ -29,7 +29,7 @@ The goal is to make this library take advantage of the native APIs like URLSessi
 - [ ] [Models](https://beta.openai.com/docs/api-reference/models)
 - [ ] [Completions](https://beta.openai.com/docs/api-reference/completions)
 - [ ] [Edits](https://beta.openai.com/docs/api-reference/edits)
-- [ ] [Images](https://beta.openai.com/docs/api-reference/images)
+- [x] [Images](https://beta.openai.com/docs/api-reference/images)
 - [ ] [Embeddings](https://beta.openai.com/docs/api-reference/embeddings)
 - [ ] [Files](https://beta.openai.com/docs/api-reference/files)
 - [ ] [Moderations](https://beta.openai.com/docs/api-reference/moderations)
@@ -47,19 +47,25 @@ yarn add react-native-openai
 
 ## Basic Usage
 
-1. Create a new OpenAI instance with your API key and organization ID.
-2. Call `stream` or `create` with your messages to generate a streaming or chat completion.
-3. Pass in your own custom `host` to use your backend in `prod`.
-
 ```js
 import OpenAI from 'react-native-openai';
 
 const openAI = new OpenAI({
   apiKey: 'YOUR_API_KEY',
   organization: 'YOUR_ORGANIZATION',
-  // host: 'my-custom-host.com', // Optional: add a custom domain
 });
 
+// Alternatively (recommended), you can use your own backend and not hardcode an API key in your app
+// pathPrefix is currently not supported on Android, so follow OpenAIs schema for your backend
+// i.e. https://my-custom-domain.com/v1/chat/completions
+const openAI = new OpenAI({
+  host: 'my-custom-host.com',
+});
+```
+
+### Chat API
+
+```js
 const [result, setResult] = React.useState('');
 
 // Listen for messages
@@ -83,6 +89,21 @@ openAI.chat.stream({
   ],
   model: 'gpt-3.5-turbo',
 });
+
+// Alternatively, you can use the create method if `stream` is false
+await openAI.chate.create(...)
+```
+
+### Image API
+
+```js
+const result = await openAI.image.create({
+  prompt: e.nativeEvent.text,
+  n: 3,
+  size: '512x512',
+});
+
+setImages(result.data.map((image) => image.url));
 ```
 
 ## Credit
