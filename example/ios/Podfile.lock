@@ -448,7 +448,7 @@ PODS:
     - React-jsi (= 0.72.3)
     - React-logger (= 0.72.3)
     - React-perflogger (= 0.72.3)
-  - ReactNativeOpenAI (0.4.0):
+  - ReactNativeOpenAI (0.5.0):
     - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
@@ -666,7 +666,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: af0b24628c1d543a3f87251c9efa29c5a589e08a
   React-utils: bcb57da67eec2711f8b353f6e3d33bd8e4b2efa3
   ReactCommon: d7d63a5b3c3ff29304a58fc8eb3b4f1b077cd789
-  ReactNativeOpenAI: f2e3b4e5d6dae755f0e687d0035c582a9fc7c653
+  ReactNativeOpenAI: 6a66dbad32ea46201f6156c96aa4dafe484c6454
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
