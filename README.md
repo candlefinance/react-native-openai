@@ -89,7 +89,7 @@ openAI.chat.stream({
 });
 
 // Alternatively, you can use the create method if `stream` is false
-await openAI.chate.create(...)
+await openAI.chat.create(...)
 ```
 
 ### Image API
